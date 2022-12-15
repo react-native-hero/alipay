@@ -1,0 +1,24 @@
+{
+  "name": "@react-native-hero/alipay",
+  "version": "0.0.1",
+  "description": "react native alipay",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/react-native-hero/alipay.git"
+  },
+  "keywords": [
+    "react",
+    "native",
+    "alipay"
+  ],
+  "author": "musicode",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/react-native-hero/alipay/issues"
+  },
+  "homepage": "https://github.com/react-native-hero/alipay#readme"
+}
