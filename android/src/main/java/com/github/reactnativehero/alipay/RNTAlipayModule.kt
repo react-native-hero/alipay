@@ -14,21 +14,22 @@ class RNTAlipayModule(private val reactContext: ReactApplicationContext) : React
 
         Thread {
 
-            val map = Arguments.createMap()
+            val response = Arguments.createMap()
 
             val alipay = PayTask(currentActivity)
-            val result = alipay.payV2(options.getString("order_info"), true)
+            // 执行到这会阻塞，直到从支付宝返回当前 App 才会继续往下执行
+            val result = alipay.payV2(options.getString("orderString"), true)
 
-            val resultStatus = result["resultStatus"] ?: ""
+            val resultStatus = result["resultStatus"] ?: "1"
             if (resultStatus == "9000") {
-                map.putInt("code", 0)
-                map.putString("msg", "success")
-                map.putString("data", result["result"] ?: "")
+                response.putInt("code", 0)
+                response.putString("msg", "success")
+                response.putString("data", result["result"] ?: "")
             } else {
-                map.putInt("code", 1)
-                map.putString("msg", result["memo"] ?: "")
+                response.putInt("code", resultStatus.toInt())
+                response.putString("msg", result["memo"] ?: "")
             }
-            promise.resolve(map)
+            promise.resolve(response)
 
         }.start()
 

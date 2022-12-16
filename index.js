@@ -1,5 +1,5 @@
 
-import { NativeEventEmitter, NativeModules, Platform } from 'react-native'
+import { NativeModules } from 'react-native'
 
 const { RNTAlipay } = NativeModules
 
@@ -10,8 +10,17 @@ export function pay(options) {
   return new Promise((resolve, reject) => {
     RNTAlipay
       .pay(options)
-      .then(data => {
-        resolve(data)
+      .then(response => {
+        if (response.code === 0) {
+          if (response.data && typeof response.data === 'string') {
+            // 把 json 字符串解析成对象，方便外部处理
+            response.data = JSON.parse(response.data)
+          }
+          resolve(data)
+        }
+        else {
+          reject(data)
+        }
       })
   })
 }

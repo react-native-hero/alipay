@@ -1,19 +1,9 @@
+#import "RNTAlipay.h"
 #import <UIKit/UIKit.h>
 #import <React/RCTConvert.h>
 #import <AlipaySDK/AlipaySDK.h>
 
 @implementation RNTAlipay
-
-+ (BOOL)handleOpenURL:(UIApplication *)application openURL:(NSURL *)url
-options:(NSDictionary<NSString*, id> *)options {
-    if ([url.host isEqualToString:@"safepay"]) {
-        // 跳转支付宝客户端进行支付，处理支付结果
-        [[AlipaySDK defaultService] processOrderWithPaymentResult:url standbyCallback:^(NSDictionary *resultDic) {
-            NSLog(@"result = %@", resultDic);
-        }];
-    }
-    return NO;
-}
 
 + (BOOL)requiresMainQueueSetup {
     return YES;
@@ -29,11 +19,27 @@ RCT_EXPORT_METHOD(pay:(NSDictionary*)options
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
     
-    NSString *orderInfo = [RCTConvert NSString:options[@"order_info"]];
-    NSString *appScheme = [RCTConvert NSString:options[@"app_scheme"]];
+    NSString *orderInfo = [RCTConvert NSString:options[@"orderString"]];
+    NSString *appScheme = [RCTConvert NSString:options[@"appScheme"]];
     
-    [[AlipaySDK defaultService] payOrder:orderString fromScheme:appScheme callback:^(NSDictionary *resultDic) {
-        NSLog(@"reslut = %@", resultDic);
+    [[AlipaySDK defaultService] payOrder:orderInfo fromScheme:appScheme callback:^(NSDictionary *resultDic) {
+
+        NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
+        
+        NSString *resultStatus = resultDic[@"resultStatus"] ?: @"1";
+        
+        if ([resultStatus isEqualToString:@("9000")]) {
+            response[@"code"] = 0;
+            response[@"msg"] = @("success");
+            response[@"data"] = resultDic[@"result"] ?: @"";
+        }
+        else {
+            response[@"code"] = @([resultStatus intValue]);
+            response[@"msg"] = resultDic[@"memo"] ?: @"";
+        }
+        
+        resolve(response);
+        
     }];
     
 }
