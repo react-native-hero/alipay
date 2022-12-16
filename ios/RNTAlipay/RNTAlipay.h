@@ -1,6 +1,5 @@
 #import <React/RCTBridgeModule.h>
-#import <React/RCTEventEmitter.h>
 
-@interface RNTAlipay : RCTEventEmitter <RCTBridgeModule>
+@interface RNTAlipay : NSObject <RCTBridgeModule>
 
 @end
