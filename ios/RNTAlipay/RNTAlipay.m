@@ -5,6 +5,11 @@
 
 @implementation RNTAlipay
 
++ (BOOL)handleOpenURL:(UIApplication *)application openURL:(NSURL *)url
+options:(NSDictionary<NSString*, id> *)options {
+    return [url.host isEqualToString:@"safepay"];
+}
+
 + (BOOL)requiresMainQueueSetup {
     return YES;
 }

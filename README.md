@@ -38,6 +38,28 @@ run the following command to link the package:
 $ react-native link @react-native-hero/alipay
 ```
 
+## Setup
+
+### iOS
+
+修改 `AppDelegate.m`：
+
+```oc
+// 导入库
+#import <RNTAlipay.h>
+
+// 添加此方法
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
+            options:(NSDictionary<NSString*, id> *)options {
+  // 确保 alipay 最先执行
+  if ([RNTAlipay handleOpenURL:application openURL:url options:options]) {
+    return YES;
+  }
+  // 其他库要求实现的 openURL 代码放在 alipay 后面，如果没有用到其他库，直接返回 YES 即可
+  return YES;
+}
+```
+
 ## Usage
 
 ```js
@@ -54,6 +76,7 @@ pay({
 })
 .then(response => {
   /**
+   * 支付成功
    * 示例 data 如下
    * {
         "alipay_trade_app_pay_response":{
