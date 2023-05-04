@@ -1,6 +1,6 @@
 {
   "name": "@react-native-hero/alipay",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "react native alipay",
   "main": "index.js",
   "scripts": {

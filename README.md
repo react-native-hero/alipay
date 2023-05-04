@@ -1,6 +1,6 @@
 # @react-native-hero/alipay
 
-封装支付宝 SDK，仅支持支付功能。
+封装支付宝 SDK，支持授权登录、支付功能。
 
 ## Getting started
 
@@ -64,8 +64,40 @@ $ react-native link @react-native-hero/alipay
 
 ```js
 import {
+  auth,
   pay,
 } from '@react-native-hero/alipay'
+
+
+// 授权登录（一般透传后端传来的参数，不用管它是什么意思）
+pay({
+  authString: 'authString',
+  // ios 需传入 appScheme
+  // appScheme 为 app 在 info.plist 注册的 scheme
+  appScheme: 'appScheme',
+})
+.then(response => {
+  /**
+   * 支付成功
+   * 示例 data 如下
+   * {
+      "success": "true",
+      "auth_code": "d9d1b5acc26e461dbfcb6974c8ff5E64",
+      "result_code": "200",
+      "user_id": "2088003646494707"
+     }
+   */
+  response.data
+})
+.catch(response => {
+  // 授权失败
+  // code（number 类型） 可能的值如下：
+  // 4000: 系统异常。
+  // 6001: 用户中途取消。
+  // 6002: 网络连接出错。
+  response.code
+  response.msg
+})
 
 // 支付（一般透传后端传来的参数，不用管它是什么意思）
 pay({
@@ -98,7 +130,7 @@ pay({
 })
 .catch(response => {
   // 支付失败
-  // code 可能的值如下：
+  // code（number 类型） 可能的值如下：
   // 8000: 正在处理中，支付结果未知（有可能已经支付成功），请查询商家订单列表中订单的支付状态。
   // 4000: 订单支付失败。
   // 5000: 重复请求。
