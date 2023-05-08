@@ -7,7 +7,12 @@
 
 + (BOOL)handleOpenURL:(UIApplication *)application openURL:(NSURL *)url
 options:(NSDictionary<NSString*, id> *)options {
-    return [url.host isEqualToString:@"safepay"];
+    if ([url.host isEqualToString:@"safepay"]) {
+        [[AlipaySDK defaultService] processOrderWithPaymentResult:url standbyCallback:nil];
+        [[AlipaySDK defaultService] processAuth_V2Result:url standbyCallback:nil];
+        return YES;
+    }
+    return NO;
 }
 
 + (BOOL)requiresMainQueueSetup {
@@ -15,7 +20,7 @@ options:(NSDictionary<NSString*, id> *)options {
 }
 
 - (dispatch_queue_t)methodQueue {
-    return dispatch_queue_create("com.github.reactnativehero.alipay", DISPATCH_QUEUE_SERIAL);
+    return dispatch_get_main_queue();
 }
 
 RCT_EXPORT_MODULE(RNTAlipay);
@@ -26,25 +31,25 @@ RCT_EXPORT_METHOD(auth:(NSDictionary*)options
     
     NSString *authInfo = [RCTConvert NSString:options[@"authString"]];
     NSString *appScheme = [RCTConvert NSString:options[@"appScheme"]];
-    
+
     [[AlipaySDK defaultService] auth_V2WithInfo:authInfo fromScheme:appScheme callback:^(NSDictionary *resultDic) {
-            
-            NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
-            
-            NSString *resultStatus = resultDic[@"resultStatus"] ?: @"1";
-            
-            if ([resultStatus isEqualToString:@("9000")]) {
-                response[@"code"] = 0;
-                response[@"msg"] = @("success");
-                response[@"data"] = resultDic[@"result"] ?: @"";
-            }
-            else {
-                response[@"code"] = @([resultStatus intValue]);
-                response[@"msg"] = resultDic[@"memo"] ?: @"";
-            }
-            
-            resolve(response);
-            
+        
+        NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
+        
+        NSString *resultStatus = resultDic[@"resultStatus"] ?: @"1";
+
+        if ([resultStatus isEqualToString:@("9000")]) {
+            response[@"code"] = @(0);
+            response[@"msg"] = @("success");
+            response[@"data"] = resultDic[@"result"] ?: @"";
+        }
+        else {
+            response[@"code"] = @([resultStatus intValue]);
+            response[@"msg"] = resultDic[@"memo"] ?: @"";
+        }
+        
+        resolve(response);
+        
     }];
     
 }
@@ -55,7 +60,7 @@ RCT_EXPORT_METHOD(pay:(NSDictionary*)options
     
     NSString *orderInfo = [RCTConvert NSString:options[@"orderString"]];
     NSString *appScheme = [RCTConvert NSString:options[@"appScheme"]];
-    
+
     [[AlipaySDK defaultService] payOrder:orderInfo fromScheme:appScheme callback:^(NSDictionary *resultDic) {
 
         NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
@@ -63,7 +68,7 @@ RCT_EXPORT_METHOD(pay:(NSDictionary*)options
         NSString *resultStatus = resultDic[@"resultStatus"] ?: @"1";
         
         if ([resultStatus isEqualToString:@("9000")]) {
-            response[@"code"] = 0;
+            response[@"code"] = @(0);
             response[@"msg"] = @("success");
             response[@"data"] = resultDic[@"result"] ?: @"";
         }
