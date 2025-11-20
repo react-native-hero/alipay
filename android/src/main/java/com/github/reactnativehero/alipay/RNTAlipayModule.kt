@@ -17,7 +17,7 @@ class RNTAlipayModule(private val reactContext: ReactApplicationContext) : React
 
             val response = Arguments.createMap()
 
-            val alipay = AuthTask(currentActivity)
+            val alipay = AuthTask(reactContext.currentActivity)
             // 执行到这会阻塞，直到从支付宝返回当前 App 才会继续往下执行
             val result = alipay.authV2(options.getString("authString"), true)
 
@@ -43,7 +43,7 @@ class RNTAlipayModule(private val reactContext: ReactApplicationContext) : React
 
             val response = Arguments.createMap()
 
-            val alipay = PayTask(currentActivity)
+            val alipay = PayTask(reactContext.currentActivity)
             // 执行到这会阻塞，直到从支付宝返回当前 App 才会继续往下执行
             val result = alipay.payV2(options.getString("orderString"), true)
 
